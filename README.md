@@ -40,3 +40,5 @@ Acara ini bebas untuk siapa saja baik untuk pemula hingga professional sekalipun
 * Selamat Jadi Heker awkwkw
 * Jangan lupa kasih bintangnya kaka
 * Semoga hari-hari mu selalu menyenangkan ^_^
+
+#Hacktoberfest2025
