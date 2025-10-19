@@ -1,0 +1,100 @@
+// C++ code for freddy the fog coderforces question
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int n, q;
+    cin >> n >> q;
+
+    string commands;
+    cin >> commands;
+
+    vector<pair<int,int>> leaves(n);
+    for (int i = 0; i < n; i++) {
+        cin >> leaves[i].first >> leaves[i].second;
+    }
+
+    // Maps to store leaves for each coordinate axis
+    unordered_map<int, set<int>> xmap;  // x -> all y's
+    unordered_map<int, set<int>> ymap;  // y -> all x's
+
+    for (auto [x, y] : leaves) {
+        xmap[x].insert(y);
+        ymap[y].insert(x);
+    }
+
+    // Freddy starts from the first leaf
+    int curX = leaves[0].first;
+    int curY = leaves[0].second;
+
+    // Remove the starting leaf (it sinks)
+    xmap[curX].erase(curY);
+    if (xmap[curX].empty()) xmap.erase(curX);
+    ymap[curY].erase(curX);
+    if (ymap[curY].empty()) ymap.erase(curY);
+
+    for (char cmd : commands) {
+        int nextX = curX, nextY = curY;
+        bool canJump = false;
+
+        if (cmd == 'A') { // Up: same x, smallest y' > curY
+            auto itx = xmap.find(curX);
+            if (itx != xmap.end()) {
+                auto it = itx->second.upper_bound(curY);
+                if (it != itx->second.end()) {
+                    nextY = *it;
+                    canJump = true;
+                }
+            }
+        } 
+        else if (cmd == 'D') { // Down: same x, largest y' < curY
+            auto itx = xmap.find(curX);
+            if (itx != xmap.end()) {
+                auto it = itx->second.lower_bound(curY);
+                if (it != itx->second.begin()) {
+                    --it;
+                    nextY = *it;
+                    canJump = true;
+                }
+            }
+        } 
+        else if (cmd == 'C') { // Right: same y, smallest x' > curX
+            auto ity = ymap.find(curY);
+            if (ity != ymap.end()) {
+                auto it = ity->second.upper_bound(curX);
+                if (it != ity->second.end()) {
+                    nextX = *it;
+                    canJump = true;
+                }
+            }
+        } 
+        else if (cmd == 'B') { // Left: same y, largest x' < curX
+            auto ity = ymap.find(curY);
+            if (ity != ymap.end()) {
+                auto it = ity->second.lower_bound(curX);
+                if (it != ity->second.begin()) {
+                    --it;
+                    nextX = *it;
+                    canJump = true;
+                }
+            }
+        }
+
+        if (canJump) {
+            curX = nextX;
+            curY = nextY;
+            // Remove the leaf we just landed on
+            xmap[curX].erase(curY);
+            if (xmap[curX].empty()) xmap.erase(curX);
+            ymap[curY].erase(curX);
+            if (ymap[curY].empty()) ymap.erase(curY);
+        }
+        // else: skip the move
+    }
+
+    cout << curX << " " << curY << "\n";
+    return 0;
+}
